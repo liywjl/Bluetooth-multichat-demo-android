@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/pm_list"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:text="@string/scan_for_devices"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/scan_for_devices"/>
+
+    <ListView
+        android:id="@+id/connectable_devices"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:stackFromBottom="false"
+        android:transcriptMode="alwaysScroll"
+        android:layout_gravity="top"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:choiceMode="singleChoice"
+        android:listSelector="@android:color/darker_gray"/>
+
+</LinearLayout>
