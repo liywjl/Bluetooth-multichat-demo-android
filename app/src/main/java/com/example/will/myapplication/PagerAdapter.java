@@ -29,37 +29,40 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
+    /**
+     * TODO: Need to replace cases to class statics
+     */
     public Fragment getItem(int position) {
 
         switch (position) {
             case 0:
 
-                //make sure that the fragment hasnt been already created
+                // Make sure that the fragment hasnt been already created
                 if(groupChat==null){
                     groupChat = new GroupMessageFragment();
 
-                    //trying to save the fragment
+                    // Trying to save the fragment
                     groupChat.setRetainInstance(true);
                 }
                 return groupChat;
             case 1:
 
-                //make sure that the fragment hasnt been already created
+                // Make sure that the fragment hasnt been already created
                 if (devicePM==null){
                     devicePM = new PMDeviceSelectFragment();
 
-                    //trying to save the fragment
+                    // Trying to save the fragment
                     devicePM.setRetainInstance(true);
                 }
                 return devicePM;
 
             case 2:
 
-                //make sure that the fragment hasnt been already created
+                // Make sure that the fragment hasnt been already created
                 if (chatPM==null){
                     chatPM = new PMChatFragment();
 
-                    //trying to save the fragment
+                    // Trying to save the fragment
                     chatPM.setRetainInstance(true);
                 }
                 return chatPM;
@@ -79,25 +82,23 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
 
 
-    /*
-    Add message to chat array
+    /**
+     * Add message to chat array
+     * deals with PM chat
      */
     public void addPersonalMessage(String senderName, String messageContent){
         chatPM.addMessageToChat(senderName,messageContent);
     }
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //This section all deals with PM chat
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    /*
-    Add a device to the PM Chat list
+    /**
+     * Add a device to the PM Chat list
      */
     public void addPMChatDevice(String deviceName, String deviceAddress){
         devicePM.addDeviceToList(deviceName, deviceAddress);
     }
 
-    /*
-    Remove a device to the PM chat
+    /**
+     * Remove a device to the PM chat
      */
     public void removePMCharDevice(String deviceAddress){
         devicePM.removeDeviceToList(deviceAddress);
@@ -116,27 +117,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         chatPM.deviceSelectedChange(selectedConversation);
     }
 
-
-
-
-
-
-
-
     /**
      * This will be called to create a fragment for a PMChat once an element is selected
+     * user selects a device from the PMDeviceSelectFragment
      */
     public void createPMChatFragment(String deviceName, String adviceAddress){
-        //the user selects a device from the PMDeviceSelectFragment
-
         if (chatPM==null){
             chatPM = new PMChatFragment();
-        } else {
-
         }
-
-
-
     }
 
     @Override

@@ -15,11 +15,6 @@ public class PacketMessage implements Serializable {
     public static final int SEARCH_PACKET=3;
     public static final int ACKNOWLEDGE_PACKET = 4;
     public static final int MESSAGE_FAIL= 5;
-
-
-    //public static final int RREQ_FULL_DUMP_OUT = 3;  //request packet
-    //public static final int DSDV_FULL_DUMP_IN = 4;
-    //public static final int DSDV_INCREMENT_OUT = 5;
     public static final int DSDV_INCREMENT_IN = 6;
 
 
@@ -28,8 +23,8 @@ public class PacketMessage implements Serializable {
     private String originalSenderName;      //use original NAME
     private String originalSenderMAC;       //use original MAC
     private int messageID = 0;
-    private String lastSenderMAC;              //use MAC
-    private String destinationMAC;             //use MAC
+    private String lastSenderMAC;           //use MAC
+    private String destinationMAC;          //use MAC
     private String messageContent;
     private int numberOfHops;
     private String nextHopNode;
@@ -38,7 +33,7 @@ public class PacketMessage implements Serializable {
 
 
     /**
-     * there will be multiple different constructeurs, depending on the message type, this will enable serialisable
+     * There will be multiple different constructeurs, depending on the message type, this will enable serialisable
      * and avoid making the message unnessesarly large
      *
      * This will be the GROUP MESSAGE constructeur
@@ -64,10 +59,8 @@ public class PacketMessage implements Serializable {
         this.messageContent=messageContent;
     }
 
-
-
-    /*
-        This will be for the SEARCH device packet
+    /**
+     *  This will be for the SEARCH device packet
      */
     public PacketMessage(String originalSenderMAC, String originalSenderName, int messageID, String lastHopMAC){ //number of hops is used to
         this.messageType=SEARCH_PACKET;
@@ -79,8 +72,8 @@ public class PacketMessage implements Serializable {
 
     }
 
-    /*
-    This is for acknowledgement of discovery, so this will be sent back
+    /**
+     * This is for acknowledgement of discovery, so this will be sent back
      */
     public PacketMessage(String destinationMAC, String currentDeviceMAC,String currentDeviceName,String lastSenderMAC, String nextHopNode, int numberOfHops){
         this.messageType=ACKNOWLEDGE_PACKET;
@@ -93,17 +86,17 @@ public class PacketMessage implements Serializable {
 
     }
 
-    /*
-    This is for message Fail
+    /**
+     * This is for message Fail
      */
     public PacketMessage(String unreachedDestinationMAC, String originalSenderMAC, String currentDevice ){ //current device is n
         this.messageType=MESSAGE_FAIL;
 
-        //Note that we use inconsistent workfing for the table, unreachable destination becomes last sender
+        //Note that we use inconsistent working for the table, unreachable destination becomes last sender
         //original sender becomes the destionat
-        this.originalSenderMAC=currentDevice; //Beware of inconsistent NAMES
-        this.failedNodeRoute=unreachedDestinationMAC;
-        this.destinationMAC=originalSenderMAC; //beware of names
+        this.originalSenderMAC = currentDevice; //Beware of inconsistent NAMES
+        this.failedNodeRoute = unreachedDestinationMAC;
+        this.destinationMAC = originalSenderMAC; //beware of names
 
         //we do not use original sender name, but it used for consutrcuter overiding
 
@@ -131,7 +124,7 @@ public class PacketMessage implements Serializable {
     }
 
     public void setLastSenderMAC(String currentDevice){
-        lastSenderMAC=currentDevice;
+        lastSenderMAC = currentDevice;
     }
 
     public String getDestinationMAC(){

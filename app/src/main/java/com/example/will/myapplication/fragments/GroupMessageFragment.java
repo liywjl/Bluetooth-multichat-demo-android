@@ -27,7 +27,7 @@ import java.util.ArrayList;
 public class GroupMessageFragment extends Fragment {
     GroupMessageSelectedListener groupCallBack;
 
-    private boolean isConnected;
+    private boolean isConnected = false;
 
     private ListView mConversationView;
     private EditText mOutEditText;
@@ -51,7 +51,7 @@ public class GroupMessageFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.group_chat_fragment, container, false);
 
-        //final View view = inflater.inflate(R.layout.group_chat_fragment, container, false);
+        // Final View view = inflater.inflate(R.layout.group_chat_fragment, container, false);
         mConversationView = (ListView) view.findViewById(R.id.in);
 
         mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
@@ -76,31 +76,27 @@ public class GroupMessageFragment extends Fragment {
         mSendButton = (Button) view.findViewById(R.id.button_send);
         mSendButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (checkConnection()){
-                    // Send a message using content of the edit text widget
-                    TextView viewText = (TextView) view.findViewById(R.id.edit_text_out);
-                    String message = viewText.getText().toString();
+            if (checkConnection()){
+                // Send a message using content of the edit text widget
+                TextView viewText = (TextView) view.findViewById(R.id.edit_text_out);
+                String message = viewText.getText().toString();
 
-                    //Will need to send the message to the MainActivity
-                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    ((MainActivity)getActivity()).sendGroupMessage(message);
+                // Send the message to the MainActivity
+                ((MainActivity)getActivity()).sendGroupMessage(message);
 
-                    //Displayes the text to the screen, need to make sure that it goes to thr right
-                    mConversationArrayAdapter.add("Me:  " + message);
+                // Displays the text to the screen, need to make sure that it goes to thr right
+                mConversationArrayAdapter.add("Me:  " + message);
 
-                    //Add to the arraylist so it can be saved, if the fragment is stopped
-                    mConversationArrayList.add("Me:  " + message);
-                    // Reset out string buffer to zero and clear the edit text field
-                    mOutStringBuffer.setLength(0);
-                    mOutEditText.setText(mOutStringBuffer);
-                } else {
-                    Toast.makeText(container.getContext(),"Device is not Connected", Toast.LENGTH_SHORT).show();
-                }
-
+                // Add to the arraylist so it can be saved, if the fragment is stopped
+                mConversationArrayList.add("Me:  " + message);
+                // Reset out string buffer to zero and clear the edit text field
+                mOutStringBuffer.setLength(0);
+                mOutEditText.setText(mOutStringBuffer);
+            } else {
+                Toast.makeText(container.getContext(),"Device is not Connected", Toast.LENGTH_SHORT).show();
+            }
             }
         });
-
-
         return view;
     }
 
@@ -113,27 +109,21 @@ public class GroupMessageFragment extends Fragment {
 
     // The action listener for the EditText widget, to listen for the return key
     private TextView.OnEditorActionListener mWriteListener =
-            new TextView.OnEditorActionListener() {
-                public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-                    // If the action is a key-up event on the return key, send the message
-                    if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                        String message = view.getText().toString();
-                        addMessageToChat("Me",message);
-                    }
-                    return true;
-                }
-            };
-
-
-
-
-
+        new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+            // If the action is a key-up event on the return key, send the message
+            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
+                String message = view.getText().toString();
+                addMessageToChat("Me",message);
+            }
+            return true;
+            }
+        };
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList("conversation", mConversationArrayList);
     }
-
 
     public void addMessageToChat(String messageContent, String sender) {
         String message = sender + ": " + messageContent;
@@ -142,13 +132,9 @@ public class GroupMessageFragment extends Fragment {
 
     }
 
-
     /**
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      * Interface to communicate to the Main activity
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-
 
     //This is in order to send a string message back to the MainActivity
     public interface GroupMessageSelectedListener {
@@ -156,6 +142,9 @@ public class GroupMessageFragment extends Fragment {
     }
 
     @Override
+    /**
+     * TODO: Need to remove as is deprecated on latest version of Android
+     */
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 

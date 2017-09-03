@@ -77,17 +77,12 @@ public class PMChatFragment extends Fragment {
 
                 ((MainActivity)getActivity()).sendPersonalMessage(message);
 
-                //addMessageToChat("Me", message);
-
-
                 // Reset out string buffer to zero and clear the edit text field
                 mOutStringBuffer.setLength(0);
                 mOutEditText.setText(mOutStringBuffer);
             }
         });
-
         return view;
-
     }
 
 
@@ -95,9 +90,6 @@ public class PMChatFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList("conversation", mConversationArrayList);
     }
-
-
-
 
     // The action listener for the EditText widget, to listen for the return key
     private TextView.OnEditorActionListener mWriteListener =
@@ -115,17 +107,17 @@ public class PMChatFragment extends Fragment {
 
 
 
-    /*
-    Called when a new device is selected, and removes the conversation, and displayes the new conversation
+    /**
+     * Called when a new device is selected, and removes the conversation, and displayes the new conversation
      */
     public void deviceSelectedChange(PMConversation previousConversation){
-        //need to remove all items from array adapter
+        // Need to remove all items from array adapter
         mConversationArrayAdapter.clear();
 
-        //add conversation to arraylist
+        // Add conversation to arraylist
         mConversationArrayList=previousConversation.getConversations();
 
-        //put conversation into arrayadapter
+        // Put conversation into arrayadapter
         for (int i=0;i<mConversationArrayList.size();i++){
             mConversationArrayAdapter.add(mConversationArrayList.get(i));
         }
@@ -134,38 +126,26 @@ public class PMChatFragment extends Fragment {
 
     public void addMessageToChat(String sender, String messageContent) {
         String message = sender + ": " + messageContent;
-        //mConversationArrayList.add(message);
         mConversationArrayAdapter.add(message);
-
     }
 
-
+    // TODO: check if this needs to be removed
     public void sendPersonalMessage(String message){
-        //This section will send the string back to the MainActivity
+        // This section will send the string back to the MainActivity
         //(MainActivity)getActivity().
     }
 
-
-
-
-
-
-
-
-
-
-
     /**
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      * Interface to communicate to the Main activity
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
-    //This is in order to send a string message back to the MainActivity
+
+    // This is in order to send a string message back to the MainActivity
     public interface PersonalMessageSelectedListener{
         void PersonalMessageSelectedListener(String personalMessage);
     }
 
     @Override
+    // TODO: remove as this is not used in newer versions of android
     public void onAttach(Activity activity){
         super.onAttach(activity);
 

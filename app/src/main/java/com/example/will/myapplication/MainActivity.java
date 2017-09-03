@@ -77,15 +77,8 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
     private String pmDeviceSelectedName;
     private String pmDeviceSelectedMACAddress;
 
-    //private Map<String,ArrayList<String>> deviceConversations;
     //It would be better to implement a Map, though for simplicity we are using an arraylist
     private ArrayList<PMConversation> deviceConversations;
-
-
-    // Array adapter for the conversation thread
-    //private ArrayAdapter<String> mConversationArrayAdapter;
-    // String buffer for outgoing messages
-    //private StringBuffer mOutStringBuffer;
 
 
     // Local Bluetooth adapter
@@ -249,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
 
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
-        /*
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
@@ -257,8 +249,6 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
         } else {
             if (mChatService == null) setupChat();
         }
-        */
-
     }
 
     @Override
@@ -280,9 +270,7 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
 
 
     /**
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     * This section need to be changed as this sets up the chat window, and therefore can be disgarded
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * TODO: need to be changed as this sets up the chat window, and therefore can be disgarded
      */
     private void setupChat() {
         Log.d(TAG, "setupChat()");
@@ -371,18 +359,18 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                 Log.e("OUTGOING MSG MENU", "OUT GOING PRESS");
 
 
-                //create a random four digit ID for the message
+                // Create a random four digit ID for the message
                 int msgID = (int) (Math.random() * 9000) + 1000;
 
-                //the this device's name
+                // The device's name
                 String deviceName = mBluetoothAdapter.getName();
                 String deviceAddress = mBluetoothAdapter.getAddress();
 
 
-                //create new message object of type group (will be done by defult from the constructeur
+                // Create new message object of type group (will be done by defult from the constructeur
                 PacketMessage groupMessage = new PacketMessage(deviceName, msgID, message);
 
-                //Send the message to the chat service outgoing message instance
+                // Send the message to the chat service outgoing message instance
                 mChatService.outgoingMessage(groupMessage);
             }
         }
@@ -397,11 +385,7 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
             if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
                 Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
                 return;
-            }else {
-
             }
-
-
 
             // Check that there's actually something to send
             if (message.length() > 0) {
@@ -414,14 +398,14 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                     }
                 }
 
-                //the this device's name
+                // The device's name
                 String deviceName = mBluetoothAdapter.getName();
                 String deviceMACAddress = mBluetoothAdapter.getAddress();
 
-                //create new Personal Packet message
+                // Create new Personal Packet message
                 PacketMessage personalMessage = new PacketMessage(deviceName,deviceMACAddress,deviceMACAddress, pmDeviceSelectedMACAddress, message);
 
-                //Send the message to the chat service outgoing message instance
+                // Send the message to the chat service outgoing message instance
                 mChatService.outgoingMessage(personalMessage);
                 adapter.addPersonalMessage("Me",message);
             }
@@ -434,34 +418,19 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
 
 
     /**
-     * this method will create a new discover message to get more devices to have PM conversations
+     * Creates a new discover message to get more devices to have PM conversations
      */
     public void sendDiscoveryMessage(){
 
-        //create a random four digit ID for the message
+        // Create a random four digit ID for the message
         int msgID = (int) (Math.random() * 9000) + 1000;
-        //create search message packet
+        // Create search message packet
 
         PacketMessage search = new PacketMessage(mBluetoothAdapter.getAddress(),mBluetoothAdapter.getName(),msgID, mBluetoothAdapter.getAddress());
-        //Send to BLuetooth service outgoing message method
+        // Send to Bluetooth service outgoing message method
         mChatService.outgoingMessage(search);
 
     }
-    /*
-    // The action listener for the EditText widget, to listen for the return key
-    private TextView.OnEditorActionListener mWriteListener =
-            new TextView.OnEditorActionListener() {
-                public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-                    // If the action is a key-up event on the return key, send the message
-                    if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                        String message = view.getText().toString();
-                        sendGroupMessage(message);
-                    }
-                    if (D) Log.i(TAG, "END onEditorAction");
-                    return true;
-                }
-            };
-            */
 
     // The Handler that gets information back from the BluetoothChatService
     private final Handler mHandler = new Handler() {
@@ -498,50 +467,48 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                         String messageContent = incomingMessage.getMessageContent();
                         String senderName = incomingMessage.getOriginalSenderName();
                         //Display the message
-                        //mConversationArrayAdapter.add("Me:  " + writeMessage);
                         adapter.addGroupMessage(senderName, messageContent);
                         break;
                     } catch (ClassCastException e) {
-
+                        // TODO: 03/09/2017  Need to handle error
                     }
 
 
                 case MESSAGE_READ:
-                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    //THIS METHOD IS NEVER CALLED!!!!!!!!!
-                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // This method is never called!
                     try {
-                        //Get the message from the BluetoothChatService Class, and cast it correctly
+                        // Get the message from the BluetoothChatService Class, and cast it correctly
                         PacketMessage incomingMessage = (PacketMessage) msg.obj;
 
-                        //get message content
+                        // Get message content
                         String messageContent = incomingMessage.getMessageContent();
-                        //get original sender name
+                        // Get original sender name
                         String senderName = incomingMessage.getOriginalSenderName();
 
 
-                        //Check that the message has content
+                        // Check that the message has content
                         if (messageContent.length() > 0) {
                             adapter.addGroupMessage(senderName, messageContent);
                         }
 
 
                     } catch (ClassCastException e) {
-
+                        // TODO:Need to handle the error
                     }
                     break;
                 case PERSONAL_MESSAGE:
                     //get the personal message
                     PacketMessage incomingMessage = (PacketMessage) msg.obj;
 
-                    //get all the relavant infromantion
+                    // Get all the relavant infromantion
                     String messageContent = incomingMessage.getMessageContent();
                     String originalSenderMAC = incomingMessage.getOriginalSenderMAC();
                     String originalSenderName = incomingMessage.getOriginalSenderName();
                     String conversationMAC= null;
-                    //see if the conversation exists
+
+                    // Checks if conversation exists
                     ConversationLoop:for (int i=0;i<deviceConversations.size();i++){
-                        conversationMAC =deviceConversations.get(i).getMACAddress();
+                        conversationMAC = deviceConversations.get(i).getMACAddress();
                         //If conversation exists, add message
                         if (conversationMAC.equals(originalSenderMAC)){
                             deviceConversations.get(i).addConversationMsg(originalSenderName+ ": "+messageContent);
@@ -552,39 +519,37 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                             //add it to the array
                             deviceConversations.add(newConversation);
                         }
-                        //If the current coversation is selected, add it to the PM UI
+                        // If the current conversation is selected, add it to the PM UI
                     }
                     if (conversationMAC.equals(pmDeviceSelectedMACAddress)){
                         adapter.addPersonalMessage(pmDeviceSelectedName,messageContent);
                     }
-
                     break;
 
-
                 case MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
+                    // Save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
                     Toast.makeText(getApplicationContext(), "Connected to "
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
 
                     break;
                 case MESSAGE_TOAST:
-                    //In order to display toast messages
+                    // Display toast messages
                     Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
                             Toast.LENGTH_SHORT).show();
                     break;
 
 
-                //This section deals with adding and removing devices that can
+                // This section deals with adding and removing devices that can
                 case NEW_CONNECTABLE_DEVICE:
-                    //Add a new Device to the PM chat service
+                    // Add a new Device to the PM chat service
                     BluetoothDevice deviceConnectable = (BluetoothDevice) msg.obj;
                     String deviceName = deviceConnectable.getName();
                     String deviceAddress = deviceConnectable.getAddress();
                     adapter.addPMChatDevice(deviceName, deviceAddress);
 
-                    //cheack if conversation dsnt already exist, else create new
-                    //could be better to use a hashMap for seeing if MAC address exits
+                    // Cheack if conversation dsnt already exist, else create new
+                    // could be better to use a hashMap for seeing if MAC address exits
                     boolean converstationExists = false;
                     converstationLoop: for (int i = 0; i < deviceConversations.size(); i++) {
                         String pmMAC = deviceConversations.get(i).getMACAddress();
@@ -595,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                         }
                     }
 
-                    //of the conversation dsnt already exitst add a new one
+                    // If the conversation doesnt already exist add a new one
                     if (!converstationExists) {
                         PMConversation newChat = new PMConversation(deviceAddress);
                         deviceConversations.add(newChat);
@@ -614,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
 
 
                 case MESSAGE_FAIL:
-                    //get all the information form the failed message
+                    // Get all the information form the failed message
                     PacketMessage failedMessage = (PacketMessage) msg.obj;
 
                     //the new direction will be to the original sender
@@ -622,9 +587,9 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                     String newDirectionMAC = failedMessage.getOriginalSenderMAC();
                     String currentDeviceMAC = mBluetoothAdapter.getAddress();
 
-                    //create new message
+                    // Create new message
                     PacketMessage failMessageToBeSent = new PacketMessage(failedDestinationMAC,newDirectionMAC,currentDeviceMAC);
-                    //send it off to the outgoing message method in bluetooth sevice class
+                    // Send it off to the outgoing message method in bluetooth sevice class
                     mChatService.outgoingMessage(failMessageToBeSent);
 
                     adapter.removePMCharDevice(failedDestinationMAC);
@@ -642,11 +607,10 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                         }
                     }
 
-                    //This all depends on if the conversation exists
+                    // This all depends on if the conversation exists
                     if (!conversationExists){
                         PMConversation newChat = new PMConversation(newDeviceAddress);
                         deviceConversations.add(newChat);
-                        //adapter.addPMChatDevice(newDeviceName, newDeviceAddress);
                     }
                     adapter.addPMChatDevice(newDeviceName, newDeviceAddress);
 
@@ -684,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
                     // Get the device MAC address
                     String address = data.getExtras()
                             .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                    // Get the BLuetoothDevice object
+                    // Get the BluetoothDevice object
                     BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
                     // Attempt to connect to the device
                     mChatService.connect(device);
@@ -707,9 +671,7 @@ public class MainActivity extends AppCompatActivity implements GroupMessageFragm
 
 
     /**
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      * This section is for the main activity to be able to communicate to each fragment!!!!!
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      *
      * @param groupMessage
      */

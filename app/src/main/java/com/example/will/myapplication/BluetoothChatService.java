@@ -52,17 +52,16 @@ public class BluetoothChatService {
     private ArrayList<ConnectedThread> mConnThreads;   //array of outgoing connections
     private ArrayList<BluetoothSocket> mSockets;       //array of incoming connections
 
-    //private ArrayList<MessageObject> mMessageObject;
-
     // Stack of message IDs to Avoid duplicate messages
     private Queue<Integer> msgIDQueue;
 
-    //inisialise a PersonalChatService
+    // Inisialise a PersonalChatService
     private RoutingTable mRoutingTable;
 
-    //hold the current MAC address for routing
+    // Hold the current MAC address for routing
     private String deviceMAC;
     private String deviceName;
+
     /**
      * A bluetooth piconet can support up to 7 connections. This array holds 7 unique UUIDs.
      * When attempting to make a connection, the UUID on the client must match one that the server
@@ -98,15 +97,12 @@ public class BluetoothChatService {
         mSockets = new ArrayList<BluetoothSocket>();
         mUuids = new ArrayList<UUID>();
 
-        //Inisialise the serialise class
+        // Inisialise the serialise class
         mSerializer = new Serializer();
 
-
-        // TODO: 02/08/2015 need to see if we need to create a PM object
-        //Create personal chat object????
         mRoutingTable = new RoutingTable();
 
-        //Initiallise the Queue Stack for Message IDs
+        // Initiallise the Queue Stack for Message IDs
         msgIDQueue = new LinkedList<Integer>();
 
         // 7 randomly-generated UUIDs. These must match on both server and client.
@@ -121,23 +117,20 @@ public class BluetoothChatService {
 
     }
 
-    /*
-    will remove node links that were dependent on a specific connection
-     */
+
+    // Will remove node links that were dependent on a specific connection
     public void removeNodeRoutes(String deviceConnectionLost){
-        //here we will remove all the paths that used this device for next hop
+        // Will remove all the paths that used this device for next hop
         mRoutingTable.removeNodeRout(deviceConnectionLost);;
 
     }
-
-
 
     public void updateTableRoute(String route){
         mRoutingTable.setRouteHops(route);
     }
 
     /*
-    checks the Array of device address and returns a boolean if the address of
+    Checks the Array of device address and returns a boolean if the address of
     the param is a duplicate
      */
     private boolean isDuplicateDevice(String address) {
@@ -226,10 +219,6 @@ public class BluetoothChatService {
         }
     }
 
-    /**
-     * this is to make s
-     * @return
-     */
     public boolean cheackIfConnected(){
         boolean connected;
         if (mConnThreads.size() > 0) {
@@ -253,7 +242,7 @@ public class BluetoothChatService {
             mAcceptThread.cancel();
         }
 
-        //make the AcceptThread to restart listining to incoming connections
+        // Make the AcceptThread to restart listening to incoming connections
         mAcceptThread = null;
 
         // Start the thread to listen on a BluetoothServerSocket
@@ -261,7 +250,6 @@ public class BluetoothChatService {
             mAcceptThread = new AcceptThread();
             mAcceptThread.start();
         }
-        //setState(STATE_LISTEN);
         cheackConnection();
 
     }
@@ -275,7 +263,7 @@ public class BluetoothChatService {
         Log.i("connect", "connect called to start chat thread");
         if (D) Log.d(TAG, "connect to: " + device);
 
-        //check for duplicates
+        // Check for duplicates
         boolean checkDuplicate = isDuplicateDevice(device.getAddress());
         if (!checkDuplicate) {
 
@@ -318,7 +306,7 @@ public class BluetoothChatService {
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(socket, device);
 
-        //create new node route
+        // Create new node route
         mRoutingTable.createNewNodeRoute(device.getName(), device.getAddress(),1, device.getAddress());
         mConnectedThread.start();
 
@@ -396,8 +384,6 @@ public class BluetoothChatService {
 
             switch (msg.getMessageType()){
                 case 1: //GROUP MESSAGE
-
-                    //msgByte = mSerializer.serialize(msg);
                     writeToAll(msgByte);
                     //Should send message to UI through this to make sure that message has been sent
                     //note that the hole message is sent to the UI, need to extract original sender and content
@@ -405,36 +391,19 @@ public class BluetoothChatService {
                     break;
 
                 case 2: //PERSONAL MESSAGE
+                    //get the message desintation
+                    String desination = msg.getDestinationMAC();
 
-                    //if (!msg.getDestinationMAC().equals(deviceMAC)){
-                        //get the message desintation
-                        String desination = msg.getDestinationMAC();
-                        //find the next hop for that destination
+                    // TODO: 08/08/2015 Need to see if i can edit this out
 
-                        //do we really need all of this?????
-                        //as this method is called once th emessage is created, so needing to
-                        //reinstate all the variables
-                        // TODO: 08/08/2015 Need to see if i can edit this out
-
-                        String nextHopNode = mRoutingTable.getRout(desination);
-                        //change the last hope address to this device
-                        //msg.setLastSenderMAC(deviceMAC);
-                        //serialise the message
-                        //msgByte = mSerializer.serialize(msg);
-                        //send to the method who deals with this
-                        sendToSpecificDevice(nextHopNode, msgByte);
-                    //} else {
-                        //this shoudl not happen as this is an outgoing message
-                    //}
+                    // Find the next hop for that destination
+                    String nextHopNode = mRoutingTable.getRout(desination);
+                    //change the last hope address to this device
+                    //send to the method who deals with this
+                    sendToSpecificDevice(nextHopNode, msgByte);
                     break;
 
                 case 3: //SEARCH PACKET
-
-                    //could this be removed???????//!!!!!!!!!!!!
-                    //!!!!!!!!!!!!!!!!!!!!!!!
-
-                    //serialise the message
-                    //msgByte = mSerializer.serialize(msg);
 
                     //This is a search message, so it will be sent to all, if it is a new message
                     //and only redirected if it comes from another node
@@ -444,21 +413,13 @@ public class BluetoothChatService {
                         writeToAll(msgByte);
                     }
                     break;
-                // TODO: 09/08/2015 there is an issue here!!!!!!, it sends the search packet
-                //There should be also other cases developed here!!!!!
 
                 case 4: //ACKNOWLEDGE PACKET
 
                     //This is for sending an achknowledge message
                     //we assume that hops, and direction have already been stated
-
-                    //destination(original sender)
-                    //original sender (current devive (both name and MAC))
-                    //have the number of hops aswell
                     String destinationNodeHop = mRoutingTable.getRout(msg.getDestinationMAC());
-
                     msgByte = mSerializer.serialize(msg);
-
                     sendToSpecificDevice(destinationNodeHop, msgByte);
                     break;
 
@@ -478,8 +439,6 @@ public class BluetoothChatService {
                     sendToSpecificDevice(destinationNodeNextHop, msgByte);
             }
         } catch (IOException e) {
-
-            // TODO: 01/08/2015 Need to remove added informantion if there was a failer
             // Send a failure message back to the Activity
             Message msgUI = mHandler.obtainMessage(MainActivity.MESSAGE_TOAST);
             Bundle bundle = new Bundle();
@@ -494,12 +453,11 @@ public class BluetoothChatService {
     /**
      * Write to the ConnectedThread in an unsynchronized manner
      *
-     * @// TODO: 24/07/2015 this is were all the messages are sent from, need to avoid duplicates???
+     * TODO: 24/07/2015 this is were all the messages are sent from, need to avoid duplicates, by standardising connections
      * @see ConnectedThread#write(byte[])
      */
     public void writeToAll(byte[] outByteMsg) {
         Log.i("write Group", "write to ConnectedThread in unsynchronised manner");
-
 
         // When writing, try to write out to all connected threads
         for (int i = 0; i < mConnThreads.size(); i++) {
@@ -514,13 +472,14 @@ public class BluetoothChatService {
                 // Perform the write unsynchronized
                 r.write(outByteMsg);
             } catch (Exception e) {
+                // TODO: need to handle error for message submission
             }
         }
 
     }
 
     /**
-     * this sends the message to a specific device, it can be a personal message
+     * Sends the message to a specific device, it can be a personal message
      * or it can be a RREQ or other table realted message
      * @param targetDeviceMAC
      * @param outByteMsg
@@ -536,7 +495,7 @@ public class BluetoothChatService {
                     r.write(outByteMsg);
                     break findDeviceLoop;
                 }catch (Exception e) {
-                    //can throw error
+                    // TODO: need to handle error for message submission
                 }
             }
         }
@@ -564,6 +523,7 @@ public class BluetoothChatService {
                     // Perform the write unsynchronized
                     r.write(send);
                 } catch (Exception e) {
+                    // TODO: need to handle error for message submission
                 }
             }
         }
@@ -726,18 +686,11 @@ public class BluetoothChatService {
             }
 
         } catch (ClassNotFoundException | IOException e) {
-
-
-            //removed for the main test!!!!!!!!!!
-            /*
-            // Send a failure message back to the Activity
             Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_TOAST);
             Bundle bundle = new Bundle();
             bundle.putString(MainActivity.TOAST, "incoming message currupted");
             msg.setData(bundle);
             mHandler.sendMessage(msg);
-            */
-
         }
 
     }
@@ -958,11 +911,9 @@ public class BluetoothChatService {
                     mDeviceAddresses.remove(mmDevice.getAddress());
                     mConnThreads.remove(this);
                     mSockets.remove(this.mmSocket);
-                    //clear all selectable devices if there anre no more connectable device
-                    if
-                            (
 
-                            mConnThreads.size()==0){
+                    //clear all selectable devices if there anre no more connectable device
+                    if(mConnThreads.size()==0){
                         mHandler.obtainMessage(MainActivity.REMOVE_ALL_SELECTABLE_DEVICES, -1, -1).sendToTarget();
                     }
                     break;

@@ -27,19 +27,18 @@ import java.util.ArrayList;
 public class PMDeviceSelectFragment extends Fragment {
     deviceSelectedListener deviceCallBack;
 
-    //Inisialise the scan button to be able to search for more devices
+    // Inisialise the scan button to be able to search for more devices
     private Button mSearchDevices;
-    //Inisialise the List view to display devices to communicate to
+    // Inisialise the List view to display devices to communicate to
     private ListView mReachabelDevicesList;
 
-    //Create a HashSet that will hold the list of connectable devices
-    //This will avoid duplicate devices from being added
+    // Create a HashSet that will hold the list of connectable devices
+    // This will avoid duplicate devices from being added
     private ArrayAdapter<String> mListDevices;
 
-    //This will be a the arrayList that will save all the device
+    // This will be a the arrayList that will save all the device
     private ArrayList<String> mArrayDevice;
 
-    //
     ArrayList<String> mArrayDeviceMACaddress;
 
 
@@ -47,24 +46,23 @@ public class PMDeviceSelectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setRetainInstance(true);
-        //return inflater.inflate(R.layout.personal_message_device_list, container, false);
 
         final View view = inflater.inflate(R.layout.personal_message_device_list, container, false);
 
-        //inisialise the listView
+        // Inisialise the listView
         mReachabelDevicesList = (ListView) view.findViewById(R.id.connectable_devices);
 
-        //The device will be displayed like a message, so might need to change this
+        // The device will be displayed like a message, so might need to change this
         mListDevices = new ArrayAdapter<String>(getActivity(), R.layout.personal_message_device);
 
-        //gets the saved array of MAC addresses
+        // Gets the saved array of MAC addresses
         if (savedInstanceState == null || !savedInstanceState.containsKey("MACList")) {
             mArrayDeviceMACaddress=new ArrayList<String>();
         } else {
             mArrayDeviceMACaddress=savedInstanceState.getStringArrayList("MACList");
         }
 
-        //gets the saved array of deives
+        // Gets the saved array of deives
         if (savedInstanceState == null || !savedInstanceState.containsKey("devices")) {
             mArrayDevice = new ArrayList<String>();
         } else {
@@ -84,8 +82,7 @@ public class PMDeviceSelectFragment extends Fragment {
 
         mReachabelDevicesList.setAdapter(mListDevices);
 
-        //Set an onCLick Lister for each element on the listview
-
+        //Set an onClick Lister for each element on the listview
         mReachabelDevicesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -101,18 +98,13 @@ public class PMDeviceSelectFragment extends Fragment {
 
     }
 
-
     /**
      * this will be called to create a
      * @param position
      */
+    // TODO can be removed
     public void onDeviceSelected(int position){
-
-
     }
-
-
-
 
     public void addDeviceToList(String deviceName, String deviceAddress) {
         if (!mArrayDeviceMACaddress.contains(deviceAddress)){
@@ -123,31 +115,22 @@ public class PMDeviceSelectFragment extends Fragment {
         }
     }
 
-
     public void removeDeviceToList(String deviceAddress) {
-        //Note that both the ArrayList and ArrayAdapter items will be removed
-        //the issue is that we assume that bothe the ArrayList and ArrayAdapter are of the same size!!!
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Note that both the ArrayList and ArrayAdapter items will be removed
+        // the issue is that we assume that bothe the ArrayList and ArrayAdapter are of the same size!!!
         String removeDevice = null;
 
-        //remove the address from the list of MAC address
+        // Remove the address from the list of MAC address
         mArrayDeviceMACaddress.remove(deviceAddress);
 
-
-
-
-        //Find the device corresponding to the same MAC address, and remove it from both the ArrayList and ArrayAdapter
+        // Find the device corresponding to the same MAC address, and remove it from both the ArrayList and ArrayAdapter
         deviceLoop:for (int i = 0; i < mArrayDevice.size(); i++) {
             if (mArrayDevice.get(i).toLowerCase().contains(deviceAddress.toLowerCase())) {
 
                 //we remove the object that looks the same from ArrayLIst of Array Adapter
                 mListDevices.remove(mArrayDevice.get(i));
                 mArrayDevice.remove(i);
-                //mListDevices.remove(mListDevices.getItem(i));
-                //removeDevice =mListDevices.getItem(i);
 
-                //Note sure if this works???????????
-                //mListDevices.notifyDataSetChanged();
                 break deviceLoop;
             }
         }
@@ -159,8 +142,6 @@ public class PMDeviceSelectFragment extends Fragment {
         mListDevices.clear();
     }
 
-
-
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList("devices", mArrayDevice);
@@ -169,9 +150,7 @@ public class PMDeviceSelectFragment extends Fragment {
 
 
     /**
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      * Interface to communicate to the Main activity
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
 
     //This is in order to send a string message back to the MainActivity
@@ -186,7 +165,7 @@ public class PMDeviceSelectFragment extends Fragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
 
-        //this will call the MainActivity to creat a new fragment on device selected
+        // This will call the MainActivity to create a new fragment on device selected
         try {
             deviceCallBack = (deviceSelectedListener) activity;
         } catch (ClassCastException e) {
